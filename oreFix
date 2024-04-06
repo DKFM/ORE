@@ -30,7 +30,7 @@ if ! command -v solana-keygen &> /dev/null; then
     echo "将 Solana CLI 添加到 PATH"
     export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
     export PATH="$HOME/.cargo/bin:$PATH"
-    
+
 
 fi
 
@@ -55,7 +55,7 @@ fi
 
 # 安装 Ore CLI
 echo "正在安装 Ore CLI..."
-cargo install ore-cli@=0.4.1
+cargo install ore-cli
 
 # 检查并将Solana的路径添加到 .bashrc，如果它还没有被添加
 grep -qxF 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' ~/.bashrc || echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
@@ -76,7 +76,7 @@ THREADS=${custom_threads:-4}
 
 # 获取用户输入的优先费用或使用默认值
 read -p "请输入交易的优先费用 (默认设置 1): " custom_priority_fee
-PRIORITY_FEE=${custom_priority_fee:-1000000}
+PRIORITY_FEE=${custom_priority_fee:-100}
 
 # 使用 screen 和 Ore CLI 开始挖矿
 session_name="ore"
@@ -99,7 +99,7 @@ function export_wallet() {
     echo "安装必要的工具和依赖..."
     sudo apt install -y curl build-essential jq git libssl-dev pkg-config screen
     check_and_install_dependencies
-    
+
     echo "正在恢复Solana钱包..."
     # 提示用户输入助记词
     echo "下方请粘贴/输入你的助记词，用空格分隔，盲文不会显示的"
@@ -184,10 +184,14 @@ THREADS=${custom_threads:-4}
 
 # 获取用户输入的优先费用或使用默认值
 read -p "请输入交易的优先费用 (默认设置 1): " custom_priority_fee
-PRIORITY_FEE=${custom_priority_fee:-1000000}
+PRIORITY_FEE=${custom_priority_fee:-100}
+
+# 获取用户输入的序号
+read -p "请输入启动序号: " ore_number
+number=${ore_number:0}
 
 # 使用 screen 和 Ore CLI 开始挖矿
-session_name="ore"
+session_name="ore_$number"
 echo "开始挖矿，会话名称为 $session_name ..."
 
 start="while true; do ore --rpc $RPC_URL --keypair ~/.config/solana/id.json --priority-fee $PRIORITY_FEE mine --threads $THREADS; echo '进程异常退出，等待重启' >&2; sleep 1; done"
@@ -223,7 +227,7 @@ sudo apt update && sudo apt upgrade -y
 echo "安装必要的工具和依赖..."
 sudo apt install -y curl build-essential jq git libssl-dev pkg-config screen
 check_and_install_dependencies
-    
+
 
 # 检查并将Solana的路径添加到 .bashrc，如果它还没有被添加
 grep -qxF 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' ~/.bashrc || echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
@@ -320,7 +324,7 @@ sudo apt update && sudo apt upgrade -y
 echo "安装必要的工具和依赖..."
 sudo apt install -y curl build-essential jq git libssl-dev pkg-config screen
 check_and_install_dependencies
-    
+
 
 # 检查并将Solana的路径添加到 .bashrc，如果它还没有被添加
 grep -qxF 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' ~/.bashrc || echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
@@ -414,10 +418,10 @@ function main_menu() {
         4) view_rewards ;;
         5) claim_rewards ;;
         6) check_logs ;;
-        7) multiple ;; 
-        8) check_multiple ;; 
-        9) multi_claim ;; 
-        10) remove_screens ;; 
+        7) multiple ;;
+        8) check_multiple ;;
+        9) multi_claim ;;
+        10) remove_screens ;;
         esac
         echo "按任意键返回主菜单..."
         read -n 1
