@@ -1,1 +1,1 @@
-wget -O ore.sh https://raw.githubusercontent.com/DKFM/ORE/main/oreFix.sh && chmod +x ore.sh && ./ore.sh
+wget -O ore.sh [https://raw.githubusercontent.com/DKFM/ORE/main/oreFix.sh](https://raw.githubusercontent.com/DKFM/ORE/main/oreFix.sh?token=GHSAT0AAAAAACQJYLYDGKACFSU545UNGCKCZQRQ62A) && chmod +x ore.sh && ./ore.sh
