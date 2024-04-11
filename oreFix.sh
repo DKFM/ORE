@@ -391,6 +391,63 @@ done
 
 }
 
+function cliam_multiple() {
+#!/bin/bash
+
+# 提示用户输入RPC地址
+echo -n "请输入RPC地址（例如：https://api.mainnet-beta.solana.com）: "
+read rpc_address
+
+# 确认用户输入的是有效RPC地址
+if [[ -z "$rpc_address" ]]; then
+  echo "RPC地址不能为空。"
+  exit 1
+fi
+
+# 提示用户输入优先费用
+echo -n "请输入优先费用（单位：lamports，例如：500000）: "
+read priority_fee
+
+# 确认用户输入的是有效的数字
+if ! [[ "$priority_fee" =~ ^[0-9]+$ ]]; then
+  echo "优先费用必须是一个整数。"
+  exit 1
+fi
+
+# 提示用户同时输入起始和结束编号
+echo -n "请输入起始和结束编号，中间用空格分隔比如跑了10个钱包地址，输入1 10即可: "
+read -a range
+
+# 获取起始和结束编号
+start=${range[0]}
+end=${range[1]}
+
+# 无限循环
+while true; do
+  # 执行循环
+  for i in $(seq $start $end); do
+    echo "执行钱包 $i 并且RPC $rpc_address and 以及 $priority_fee"
+
+    # 执行命令 1
+    result=$(ore --rpc "$rpc_address" --keypair "~/.config/solana/id$i.json" --priority-fee "$priority_fee" rewards)
+
+    # 检查结果是否大于 0.01，如果是，则执行命令 2
+    if (( $(echo "$result > 0.01" | bc -l) )); then
+      ore --rpc "$rpc_address" --keypair "~/.config/solana/id$i.json" --priority-fee "$priority_fee" claim
+    else
+      echo "命令 1 结果不大于 0.01，跳过命令 2 的执行"
+    fi
+  done
+  echo "成功领取 $start to $end."
+done
+
+}
+
+
+
+
+
+
 # 主菜单
 function main_menu() {
     while true; do
@@ -409,6 +466,7 @@ function main_menu() {
         echo "6. 查看节点运行情况"
         echo "7. 单机多开钱包，需要自行准备json私钥"
         echo "8. 单机查看多钱包奖励"
+        echo "9. 多钱包领取奖励"
         read -p "请输入选项（1-9）: " OPTION
 
         case $OPTION in
@@ -420,7 +478,7 @@ function main_menu() {
         6) check_logs ;;
         7) multiple ;;
         8) check_multiple ;;
-        9) multi_claim ;;
+        9) cliam_multiple ;;
         10) remove_screens ;;
         esac
         echo "按任意键返回主菜单..."
