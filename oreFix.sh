@@ -430,9 +430,9 @@ while true; do
 
     # 执行命令 1
     result=$(ore --rpc "$rpc_address" --keypair "~/.config/solana/id$i.json" --priority-fee "$priority_fee" rewards)
-    result_int=$(awk "BEGIN {print int($reward * 1000)}")
+
     # 检查结果是否大于 0.01，如果是，则执行命令 2
-    if (( $(echo "$result_int > 10" | bc -l) )); then
+    if (( $(echo "$result > 0.01" | bc -l) )); then
       ore --rpc "$rpc_address" --keypair "~/.config/solana/id$i.json" --priority-fee "$priority_fee" claim
     else
       echo "命令 1 结果不大于 0.01，跳过命令 2 的执行"
@@ -440,8 +440,6 @@ while true; do
   done
   echo "成功领取 $start to $end."
 done
-
-}
 
 
 
